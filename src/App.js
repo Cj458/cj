@@ -1,25 +1,62 @@
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import Header from './Header';
+import Home from './Home';
+import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import Checkout from './Checkout';
+import Login from './Login';
+import {auth} from './firebase';
+import { FooterContainer } from './container/footer';
 
 function App() {
+
+  useEffect(() =>{
+ auth.onAuthStateChanged(authUser => {
+   console.log('The User Is', authUser);
+
+   if (authUser){
+     //logged in
+     dispatchEvent({
+       type:'SET_USER',
+       user: authUser
+     })
+   } else{
+     //logged out
+     dispatchEvent({
+       type:'SET_USER',
+       user: null
+     })
+   }
+ })
+  }, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <Router>
+    <div className="app">
+      
+      <Switch>
+        <Route path="/login">
+          <Login/>
+        </Route>
+   
+        <Route path="/checkout">
+          <Header/>
+          <Checkout/>
+          <FooterContainer/>
+        </Route>
+
+        <Route path="/">
+          <Header/>
+          <Home/>
+          <FooterContainer/>
+        </Route>
+           
+           
+
+      </Switch>
     </div>
+    </Router>
   );
+ 
 }
 
 export default App;
